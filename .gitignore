@@ -1,6 +1,6 @@
 ## 폴더 무시
-node_modules/
-config/
-uploads/*.jpg, *.jpeg
-public/
+/node_modules/
+/config/
+/uploads/
+/public/
 
