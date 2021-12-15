@@ -1,5 +1,6 @@
 ## 폴더 무시
 node_modules/
 config/
-uploads/
+uploads/*.jpg, *.jpeg
 public/
+
