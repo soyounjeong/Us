@@ -483,12 +483,12 @@ const editMember = function (img, name, tel, message, gender, email, callback) {
 // 정보 삭제(탈퇴)
 // http://127.0.0.1:3001/member/delete (delete)
 router.route('/member/delete').delete((req, res) => {
-    const email = req.body.email;
+    const idx = req.body.idx;
 
-    console.log(`email : ${email}`);
+    console.log(`idx:${idx}`);
 
     if (pool) {
-        deleteMember(email, (err, result) => {
+        deleteMember(idx, (err, result) => {
             if (err) {
                 res.send(false)
                 res.end();
@@ -503,12 +503,12 @@ router.route('/member/delete').delete((req, res) => {
         });
     }
 });
-const deleteMember = function (email, callback) {
+const deleteMember = function (idx, callback) {
     pool.getConnection((err, conn) => {
         if (err) {
             console.log(err);
         } else {
-            const sql = conn.query('delete from member where email=?', [email], (err, result) => {
+            const sql = conn.query('delete from member where idx=?', [idx], (err, result) => {
                 conn.release();
                 if (err) {
                     callback(err, null);
