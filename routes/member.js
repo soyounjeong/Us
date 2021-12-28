@@ -36,6 +36,7 @@ router.use(session({
 }));
 
 
+
 app.set('view engine', 'ejs'); // 화면 engine을 ejs로 설정
 app.set('views', '../views'); // view 경로 설정 
 
@@ -527,5 +528,11 @@ router.route('/getCookie').get((req, res)=>{
     res.send(req.cookies.three);
 })
 
+// Access-Control-Allow-Origin
+app.use((req,res,next)=>{
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET,POST, PUT, DELETE');
+    next();
+})
 
 module.exports = router
