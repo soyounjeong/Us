@@ -1,4 +1,4 @@
-# Us 소셜 플랫폼 / Node.js Oracle
+# Us 소셜 플랫폼 / Node.js & React 
  * 개발 기간 : 2021.11.08 ~ 2021.12.31
  * 주제 : "Us" 소셜 플랫폼 제작
  * 개발 : Mysql , Visual Studio code
