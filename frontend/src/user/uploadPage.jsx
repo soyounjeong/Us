@@ -59,7 +59,8 @@ const UploadForm = styled.div`
     .re_btn_box { margin: 0.5rem 0; }
     .header_btn, .up_pro_time_container{ display: flex; align-items:center; margin-right: 0.5rem; }
     .upd_btn, .del_btn, .main_btn{ cursor: pointer; font-size: 1.2rem; margin-right: 0.5rem; background-color: #14c1c7; padding: 0.5rem 1.2rem; color: white; border: none; font-weight: 600;border-radius: 5px;}
-`;
+    .nomatch{display:none;}
+    `;
 
 const EditPopWrap = styled.div`
     @import url('https://fonts.googleapis.com/css2?family=Courgette&family=Noto+Sans+KR:wght@300&display=swap');
@@ -139,7 +140,7 @@ const UploadPage = () => {
         setEmail(curr[0])
         if(detailImg===0){setDetailImg(1)}else{setDetailImg(0)} // scrollImg-useEffect 재실행을 위해 detailImg 값 변경
     }, [isUpdate]);
-    console.log(detail)
+
     useEffect(async () => { // scrollImg-useEffect
         if(detail.postImg.length!==0){setScrollImg(detail.postImg[0].imgName)}
     }, [detailImg]);
@@ -386,8 +387,8 @@ const UploadPage = () => {
                                             <Link to={"/main?idx="+cookie}>
                                                 <button type="button" className="main_btn">메인</button>
                                             </Link>
-                                            <button type="button" className="upd_btn" onClick={openEditOn}>수정</button>
-                                            <button type="button" className="del_btn" onClick={openPostDel}>삭제</button>
+                                            <button type="button" className={''+detail.postInfo.idx+''===cookie?"upd_btn":'nomatch'} onClick={openEditOn}>수정</button>
+                                            <button type="button" className={''+detail.postInfo.idx+''===cookie?"del_btn":'nomatch'} onClick={openPostDel}>삭제</button>
                                         </div>
                                     </div>
                                 </div>

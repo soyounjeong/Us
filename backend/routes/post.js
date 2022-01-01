@@ -144,12 +144,12 @@ router.route('/post/detail').get((req, res) => {
 
 
 // 게시글 디테일
-const postDetail = function (postIdx, callback) {
+const postDetail = function(postIdx, callback){
     pool.getConnection((err, conn) => {
         if (err) {
             console.log(err);
         } else {
-            const sql1 = 'select p.content, p.createdAt, m.email, m.name, m.img from post as p join member as m on p.memberIdx = m.idx where p.idx = ?;';
+            const sql1 = 'select p.content, p.createdAt, m.idx, m.email, m.name, m.img from post as p join member as m on p.memberIdx = m.idx where p.idx = ?;';
             const sql1s = mysql.format(sql1, postIdx)
 
             const sql2 = 'select imgName from img where postIdx = ?;';
