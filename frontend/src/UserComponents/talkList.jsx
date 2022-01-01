@@ -107,7 +107,7 @@ const TalkList = (idx)=>{
                                     <div className='talkDetail'>{post.chat}</div>
                                 </div>
                                 <div className='talkRecord'>
-                                    <div className='talkDate'>{timeForToday(post.time)}</div>
+                                <div className='talkDate'>{post.time!==null?timeForToday(post.time):''}</div>
                                 </div>
                             </div>
                         </a>

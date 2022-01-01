@@ -27,6 +27,7 @@ const MainPage = () =>{
     
     useEffect(async () => {
         const post = await axios.get("http://localhost:3001/main/post?idx=" + param)
+        console.log(post)
         setPost(post.data)
     }, []);
 

@@ -14,7 +14,6 @@ const postRouter = require('./routes/post.js');
 const memberRouter = require('./routes/member.js');
 const adminRouter = require('./routes/admin.js');
 const replyRouter = require('./routes/reply.js');
-const chatRouter = require('./routes/chat.js');
 const inquiryRouter = require('./routes/inquiry.js');
 const pool = mysql.createPool(config);
 
@@ -23,7 +22,6 @@ app.use(mainRouter);
 app.use(postRouter);
 app.use(adminRouter);
 app.use(replyRouter);
-app.use(chatRouter);
 app.use(inquiryRouter);
 
 const io   = require('socket.io')(http, {
@@ -73,15 +71,6 @@ io.sockets.on('connection', (socket) =>{
     //socket.in(room_id).emit('msgAlert',data); //broadcast 동일하게 가능 자신 제외 룸안의 유저
     //io.of('namespace').in(room_id).emit('msgAlert', data) //of 지정된 name space의 유저의 룸
 });
-
-
-app.use(memberRouter);
-app.use(mainRouter);
-app.use(postRouter);
-app.use(adminRouter);
-app.use(replyRouter);
-app.use(chatRouter);
-app.use(inquiryRouter);
 
 
 

@@ -326,7 +326,6 @@ const invitation = function (invitationCode, idx, callback) {
                 if (result1 != "") fIdx = result1[0].idx; 
                 conn.query('select exists (select idx from friend where memberIdx = ? and friendIdx = ? limit 1) as success;', [idx, fIdx], (err, result2) => {
                     if (result2[0].success == 1) flag = true;
-
                     conn.release();
                     if (err) {
                         callback(err, null);

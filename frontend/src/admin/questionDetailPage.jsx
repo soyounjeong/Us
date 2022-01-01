@@ -45,7 +45,7 @@ const QuestionDetailPage = () => {
     }
 
     const Repeat = () => {
-        axios.put("http://localhost:3001/admin/inquiry/repeat?idx=" + idx.idx + "&message=" + message)
+        axios.get("http://localhost:3001/admin/inquiry/repeat?idx=" + idx.idx + "&message=" + message)
         if(message===''){alert('답변을 지웠습니다')}else{alert('답변이 등록되었습니다')}
     }
 

@@ -103,7 +103,6 @@ const replyInsert = function (idx, groupIdx, postIdx, content, memberIdx, callba
                         if (err) {
                             callback(err, null);
                             console.log(err)
-                            console.log('select문 오류')
                             return;
                         } else {
                             callback(null, true);
@@ -121,7 +120,6 @@ const replyInsert = function (idx, groupIdx, postIdx, content, memberIdx, callba
                                     conn.release();
                                     if (err) {
                                         callback(err, null);
-                                        console.log('select문 오류')
                                         return;
                                     } else {
                                         callback(null, true);
@@ -135,7 +133,6 @@ const replyInsert = function (idx, groupIdx, postIdx, content, memberIdx, callba
                                 conn.release();
                                 if (err) {
                                     callback(err, null);
-                                    console.log('select문 오류')
                                     return;
                                 } else {
                                     callback(null, true);
@@ -171,7 +168,6 @@ const replyDelete = function (idx, callback) {
                 conn.release();
                 if (err) {
                     callback(err, null);
-                    console.log('select문 오류')
                     return;
                 } else {
                     callback(null, true);
@@ -213,7 +209,6 @@ const replyLikeExist = function (replyIdx, memberIdx, callback) {
             console.log(err);
         } else {
             conn.query('select exists (select idx from reply_like where replyIdx = ? and memberIdx = ? limit 1) as success;', [replyIdx, memberIdx], (err, result) => {
-
                 conn.release();
                 if (err) {
                     callback(err, null);

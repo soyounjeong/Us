@@ -15,7 +15,7 @@ const session = require('express-session'); // 세션 설정과 관리
 const MySQLStore = require('express-mysql-session')(session); // 세션 설정과 관리
 var sessionStore = new MySQLStore(config);
 
-router.use(cors({origin : 'http://localhost:3000', credentials : true, methods : "put,get,post,delete,options"}));
+router.use(cors({origin : 'http://localhost:3000', credentials : true, methods : "PUT,GET,POST,DELETE"}));
 
 // 세션 환경세팅
 router.use(session({
@@ -72,8 +72,7 @@ const LoginAdmin = function(email, userPw, callback){
         if(err){
             console.log(err);
         }else{
-            console.log('접근 성공');
-            const sql = conn.query('select idx, email, userPw from member where email=? and userPw=?', [email,userPw], (err, result)=>{
+            conn.query('select idx, email, userPw from member where email=? and userPw=?', [email,userPw], (err, result)=>{
                 console.log(result);
                 conn.release();
                 if(err){
@@ -93,7 +92,6 @@ const LoginAdmin = function(email, userPw, callback){
 // 로그아웃
 router.route('/admin/logout').get((req, res) => {
     res.clearCookie("first");
-    res.clearCookie("three");
     req.session.destroy(function (err, result) {
         if (err) console.err('err : ', err);
         res.json({message: "로그아웃!"});
@@ -339,7 +337,7 @@ router.route('/admin/inquiry/detail').get((req, res) => {
 });
 
 // 문의 답변
-router.route('/admin/inquiry/repeat').put((req, res) => {
+router.route('/admin/inquiry/repeat').get((req, res) => {
     const idx = req.query.idx;
     const message = req.query.message;
     if (pool) {
@@ -415,7 +413,6 @@ const adminMember = function (cur, email, callback) {
                 conn.query('select count(*) as cnt from member', (err, result) => {
                     if (err) {
                         console.log(err);
-                        console.log('sql문 오류')
                     } else {
                         totalPageCount = result[0].cnt;
 
@@ -460,7 +457,6 @@ const adminMember = function (cur, email, callback) {
                 conn.query('select count(*) as cnt from member where email like ?', [keyword], (err, result) => {
                     if (err) {
                         console.log(err);
-                        console.log('sql문 오류')
                     } else {
                         totalPageCount = result[0].cnt;
 
@@ -545,7 +541,6 @@ const adminMemberPost = function (idx, cur, content, callback) {
                 conn.query('select count(*) as cnt from post where memberIdx = ?', [idx], (err, result) => {
                     if (err) {
                         console.log(err);
-                        console.log('sql문 오류')
                     } else {
                         totalPageCount = result[0].cnt;
                         console.log(totalPageCount)
@@ -590,7 +585,6 @@ const adminMemberPost = function (idx, cur, content, callback) {
                 conn.query('select count(*) as cnt from post where content like ? and memberIdx = ?', [keyword, idx], (err, result) => {
                     if (err) {
                         console.log(err);
-                        console.log('sql문 오류')
                     } else {
                         totalPageCount = result[0].cnt;
 
@@ -684,7 +678,6 @@ const adminMemberRoom = function (idx, cur, title, callback) {
                 conn.query('select count(*) as cnt from room as r join room_mem as rm on r.idx = rm.roomIdx where rm.memberIdx = ?;', [idx], (err, result) => {
                     if (err) {
                         console.log(err);
-                        console.log('sql문 오류')
                     } else {
                         totalPageCount = result[0].cnt;
 
@@ -717,7 +710,6 @@ const adminMemberRoom = function (idx, cur, title, callback) {
                             conn.release();
                             if (err) {
                                 callback(err, null); 3
-                                console.log('sql문 오류')
                                 return;
                             } else {
                                 callback(null, { result, startPage, endPage, totalPage });
@@ -730,7 +722,6 @@ const adminMemberRoom = function (idx, cur, title, callback) {
                 conn.query('select count(*) as cnt from room as r join room_mem as rm on r.idx = rm.roomIdx where rm.memberIdx = ? and r.title like ?', [idx, keyword], (err, result) => {
                     if (err) {
                         console.log(err);
-                        console.log('sql문 오류')
                     } else {
                         totalPageCount = result[0].cnt;
 
@@ -763,7 +754,6 @@ const adminMemberRoom = function (idx, cur, title, callback) {
                             conn.release();
                             if (err) {
                                 callback(err, null); 3
-                                console.log('sql문 오류')
                                 return;
                             } else {
                                 callback(null, { result, startPage, endPage, totalPage });
@@ -824,7 +814,6 @@ const adminPost = function (cur, date1, date2, callback) {
                 conn.query('select count(*) as cnt from post where createdAt between ? and ? ', [date11, date22], (err, result) => {
                     if (err) {
                         console.log(err);
-                        console.log('sql문 오류')
                     } else {
                         totalPageCount = result[0].cnt;
                         if (totalPageCount < 0) {
@@ -855,7 +844,6 @@ const adminPost = function (cur, date1, date2, callback) {
                             conn.release();
                             if (err) {
                                 callback(err, null);
-                                console.log('sql문 오류')
                                 return;
                             } else {
                                 callback(null, { result, startPage, endPage, totalPage });
@@ -867,7 +855,6 @@ const adminPost = function (cur, date1, date2, callback) {
                 conn.query('select count(*) as cnt from post', (err, result) => {
                     if (err) {
                         console.log(err);
-                        console.log('sql문 오류')
                     } else {
                         totalPageCount = result[0].cnt;
 
@@ -900,7 +887,6 @@ const adminPost = function (cur, date1, date2, callback) {
                             conn.release();
                             if (err) {
                                 callback(err, null);
-                                console.log('sql문 오류')
                                 return;
                             } else {
                                 callback(null, { result, startPage, endPage, totalPage });
@@ -965,7 +951,6 @@ const adminChat = function (cur, date1, date2, callback) {
                 conn.query('select count(*) as cnt from room', (err, result) => {
                     if (err) {
                         console.log(err);
-                        console.log('sql문 오류')
                     } else {
                         totalPageCount = result[0].cnt;
 
@@ -998,7 +983,6 @@ const adminChat = function (cur, date1, date2, callback) {
                             conn.release();
                             if (err) {
                                 callback(err, null);
-                                console.log('sql문 오류')
                                 return;
                             } else {
                                 callback(null, { result, startPage, endPage, totalPage });
@@ -1010,7 +994,6 @@ const adminChat = function (cur, date1, date2, callback) {
                 conn.query('select count(*) as cnt from room where createdAt between ? and ?', [date11, date22], (err, result) => {
                     if (err) {
                         console.log(err);
-                        console.log('sql문 오류')
                     } else {
                         totalPageCount = result[0].cnt;
 
@@ -1043,7 +1026,6 @@ const adminChat = function (cur, date1, date2, callback) {
                             conn.release();
                             if (err) {
                                 callback(err, null);
-                                console.log('sql문 오류')
                                 return;
                             } else {
                                 callback(null, { result, startPage, endPage, totalPage });
@@ -1124,7 +1106,6 @@ const adminInquiry = function (cur, name, callback) {
                 conn.query('select count(*) as cnt from inquiry', (err, result) => {
                     if (err) {
                         console.log(err);
-                        console.log('sql문 오류')
                     } else {
                         totalPageCount = result[0].cnt;
 
@@ -1156,7 +1137,6 @@ const adminInquiry = function (cur, name, callback) {
                             conn.release();
                             if (err) {
                                 callback(err, null);
-                                console.log('sql문 오류')
                                 return;
                             } else {
                                 callback(null, { result, startPage, endPage, totalPage });
@@ -1176,7 +1156,6 @@ const adminInquiry = function (cur, name, callback) {
                     conn.query('select count(*) as cnt from inquiry where memberIdx = ?', [idx], (err, result) => {
                         if (err) {
                             console.log(err);
-                            console.log('sql문 오류')
                         } else {
                             totalPageCount = result[0].cnt;
 
@@ -1209,7 +1188,6 @@ const adminInquiry = function (cur, name, callback) {
                                 conn.release();
                                 if (err) {
                                     callback(err, null);
-                                    console.log('sql문 오류')
                                     return;
                                 } else {
                                     callback(null, { result, startPage, endPage, totalPage });
@@ -1281,7 +1259,7 @@ const adminDashBoard = function (callback) {
             const sql5 = 'select idx, email from member order by createdAt desc limit 0, 5;';
             const sql6 = 'select idx, content as postContent from post order by createdAt desc limit 0, 5;';
             const sql7 = 'select idx, content as inquiryContent from inquiry order by createdAt desc limit 0, 5;';
-            const sql8 = 'select r.title, r.type, count(*) as ChatCnt, r.createdAt  from room as r join room_mem as rm on r.idx = rm.roomIdx group by r.title order by r.createdAt desc limit 0, 5;';
+            const sql8 = 'select r.idx, r.title, r.type, count(*) as ChatCnt, r.createdAt  from room as r join room_mem as rm on r.idx = rm.roomIdx group by r.title order by r.createdAt desc limit 0, 5;';
 
             conn.query(sql1 + sql2 + sql3 + sql4 + sql5 + sql6 + sql7 + sql8, (err, result) => {
                 conn.release();
@@ -1314,5 +1292,4 @@ const adminInquiryDelete = function (idx, callback) {
         }
     });
 }
-
 module.exports = router
