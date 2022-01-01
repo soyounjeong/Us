@@ -14,10 +14,10 @@ const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         // 이미지 파일
         if (file.mimetype == "image/jpeg" || file.mimetype == "image/jpg" || file.mimetype == "image/png") {
-            cb(null, 'uploads')
+            cb(null, 'C:/Users/user/Desktop/Us/frontend/public/uploads')
             //텍스트 파일
         } else if (file.mimetype == "application/pdf" || file.mimetype == "application/txt" || file.mimetype == "application/octet-stream") {
-            cb(null, 'uploads')
+            cb(null, 'C:/Users/user/Desktop/Us/frontend/public/uploads')
         }
     },
     // 파일이름 설정
@@ -50,26 +50,8 @@ router.route('/post/upload').post(upload.array('fileupload', 10), (req, res) => 
     }
 });
 
-//
-router.route('/post/detail').get((req, res) => {
-    const idx = req.query.idx;
-
-    if (pool) {
-        postDetail(idx, (err, result) => {
-            if (err) {
-                res.writeHead('200', { 'content-type': 'text/html; charset=utf8' });
-                res.write('<h2>메인데이터 출력 실패 </h2>');
-                res.write('<p>데이터가 안나옵니다.</p>')
-                res.end();
-            } else {
-                res.send(result);
-            }
-        });
-    }
-})
-
 // 게시글 수정
-router.route('/post/edit').put(upload.array('fileupload', 10), (req, res) => {
+router.route('/post/edit').post(upload.array('fileupload', 10), (req, res) => {
     const idx = req.body.idx;
     const content = req.body.content;
     const file = req.files;
@@ -90,7 +72,7 @@ router.route('/post/edit').put(upload.array('fileupload', 10), (req, res) => {
 })
 
 // 게시글 삭제
-router.route('/post/delete').delete((req, res) => {
+router.route('/post/delete').get((req, res) => {
     const idx = req.query.idx;
 
     if (pool) {
@@ -145,7 +127,51 @@ router.route('/post/like/exist').get((req, res) => {
     }
 })
 
+// 게시글 디테일
+router.route('/post/detail').get((req, res) => {
+    const postIdx = req.query.postIdx;
+    if (pool) {
+        postDetail(postIdx, (err, result) => {
+            if (err) {
+                res.writeHead('200', { 'content-type': 'text/html; charset=utf8' });
+                res.write('<h2>메인데이터 출력 실패 </h2>');
+                res.write('<p>데이터가 안나옵니다.</p>')
+                res.end();
+            } else {
+                res.send(result);
+            }
+        })
+    }
+})
 
+
+// 게시글 디테일
+const postDetail = function(postIdx, callback){
+    pool.getConnection((err, conn) => {
+        if (err) {
+            console.log(err);
+        } else {
+            const sql1 = 'select p.content, p.createdAt, m.email, m.name, m.img from post as p join member as m on p.memberIdx = m.idx where p.idx = ?;';
+            const sql1s = mysql.format(sql1, postIdx)
+
+            const sql2 = 'select imgName from img where postIdx = ?;';
+            const sql2s = mysql.format(sql2, postIdx);
+
+            const sql3 = 'select r.content, m.name, m.img, m.email, r.memberIdx, r.idx, r.groupIdx, r.depth, r.createdAt from reply as r join member as m on r.memberIdx = m.idx where postIdx = ? order by groupIdx asc, groupNum asc;';
+            const sql3s = mysql.format(sql3, postIdx);
+
+            conn.query(sql1s + sql2s + sql3s, (err, result) => {
+                conn.release();
+                if (err) {
+                    callback(err, null);
+                    return;
+                } else {
+                    callback(null, result);
+                }
+            });
+        }
+    });
+}
 
 // 게시글 등록
 const postUpload = function (memberIdx, content, file, hashTag, callback) {
@@ -186,17 +212,6 @@ const postUpload = function (memberIdx, content, file, hashTag, callback) {
     });
 }
 
-// 게시글 디테일
-const postDetail = function (idx, callback) {
-    pool.getConnection((err, conn) => {
-        if (err) {
-            console.log(err);
-        } else {
-            
-        }
-    });
-}
-
 // 게시글 수정
 const postEdit = function (idx, content, file, hashTag, callback) {
     pool.getConnection((err, conn) => {
@@ -206,7 +221,7 @@ const postEdit = function (idx, content, file, hashTag, callback) {
             conn.query('update post set content = ? where idx = ?', [content, idx], (err, result1) => {
                 conn.query('select imgName from img where postIdx = ?', [idx], (err, result2) => {
                     for (let i = 0; i < result2.length; i++) {
-                        fs.unlink('uploads/images/'+result2[i].imgName, (err) => {
+                        fs.unlink('C:/project/us/frontend/public/uploads/'+result2[i].imgName, (err) => {
                             console.log(err);
                         });
                     } 
@@ -258,21 +273,7 @@ const postDelete = function (idx, callback) {
                         console.log(err);
                     });
                 }
-                conn.query('delete from img where postIdx = ?', [idx], (err, result) => {
-                    conn.query('delete from post_like where postIdx = ?', [idx]);
-                
-                    conn.query('select idx from reply where postIdx = ?', [idx], (err, result) => {
-                        if(err) {
-                            console.log(err);
-                        }
-                        for (let i = 0; i < result.length; i++) {
-                            conn.query('delete from reply_like where replyIdx = ?', [result[0].idx]);          
-                        }
-                    })
-
-                    conn.query('delete from reply where postIdx = ?', [idx]);
-                    conn.query('delete from post_hashtag where postIdx = ?', [idx]);
-                    conn.query('delete from post where idx = ?', [idx]);
+                conn.query('delete from post where idx = ?', [idx], (err, result) => {
                     conn.release();
                     if(err) {
                         callback(err, null);

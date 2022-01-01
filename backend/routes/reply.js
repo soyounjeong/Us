@@ -1,11 +1,14 @@
 const express = require('express');
 const mysql = require('mysql');
-const config = require('../config/config');
+const config = require('../config/config.json');
 const bodyParser = require('body-parser');
 const pool = mysql.createPool(config);
+const cors = require('cors');
 
 const router = express.Router()
 router.use(bodyParser.urlencoded({ extended: false }))
+router.use(bodyParser.json())  
+router.use(cors({origin : 'http://localhost:3000', credentials : true, methods : "PUT,GET,POST,DELETE,OPTIONS,HEAD"}));
 
 // 댓글 입력
 router.route('/reply/insert_reply').post((req, res) => {
@@ -30,27 +33,8 @@ router.route('/reply/insert_reply').post((req, res) => {
     }
 });
 
-// 댓글 수정
-router.route('/reply/edit_reply').put((req, res) => {
-    const idx = req.body.idx;
-    const content = req.body.content;
-
-    if (pool) {
-        replyEdit(idx, content, (err, result) => {
-            if (err) {
-                res.writeHead('201', { 'content-type': 'text/html; charset=utf8' });
-                res.write('<h2>메인데이터 출력 실패 </h2>');
-                res.write('<p>데이터가 안나옵니다.</p>')
-                res.end();
-            } else {
-                res.send(result);
-            }
-        });
-    }
-})
-
 // 댓글 삭제
-router.route('/reply/delete_reply').delete((req, res) => {
+router.route('/reply/delete_reply').get((req, res) => {
     const idx = req.query.idx;
 
     if (pool) {
@@ -118,6 +102,7 @@ const replyInsert = function (idx, groupIdx, postIdx, content, memberIdx, callba
                         conn.release();
                         if (err) {
                             callback(err, null);
+                            console.log(err)
                             console.log('select문 오류')
                             return;
                         } else {
@@ -162,25 +147,6 @@ const replyInsert = function (idx, groupIdx, postIdx, content, memberIdx, callba
             }
         }
     });
-}
-
-// 댓글 수정
-const replyEdit = function (idx, content, callback) {
-    pool.getConnection((err, conn) => {
-        if (err) {
-            console.log(err);
-        } else {
-            conn.query('update reply set content = ? where idx = ?', [content, idx], (err, result) => {
-                conn.release();
-                if (err) {
-                    callback(err, null);
-                    return;
-                } else {
-                    callback(null, true);
-                }
-            })
-        }
-    })
 }
 
 // 댓글 삭제
